@@ -52,7 +52,7 @@ let transporter = nodemailer.createTransport(
     },
   },
   {
-    from: `Suliko <${process.env.EMAIL}>`,
+    from: `Mailer <${process.env.EMAIL}>`,
   }
 );
 
@@ -130,5 +130,3 @@ Email: ${req.body.email}
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
-
-// https://suliko.vercel.app/deu
