@@ -42,6 +42,7 @@ const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 let transporter = nodemailer.createTransport(
   {
+    pool: true,
     service: "Gmail",
     auth: {
       type: "OAuth2",
