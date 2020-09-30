@@ -69,35 +69,13 @@ transporter.verify((error, success) => {
 });
 
 server.post("/subscribe", urlencodedParser, function (req, res) {
-  const msgAbtSubscr = `<p> You have a ney subscriber! 🙂 <br/><br/>
+  const msgAbtSubscr = `<p> You have a new subscriber! 🙂 <br/><br/>
 Email: ${req.body.email}
 </p>`;
-
-  // const msgToClient = `<p style='font-weight:bold;'> Thank U! Table reservation was successful! 🙂 <br/>
-  // People: ${req.body.peopleCount}<br/>
-  // Date: ${req.body.date}<br/>
-  // Time: ${req.body.time}<br/>
-  // Name: ${req.body.name}<br/>
-  // Phone: ${req.body.phone}<br/>
-  // Email: ${req.body.email}</p>`;
 
   if (!req.body) return res.sendStatus(400);
   console.log(req.body);
 
-  // // email to Client of Restourant
-  // transporter.sendMail(
-  //   {
-  //     // from: process.env.GMAIL_ADDRESS,
-  //     to: req.body.email,
-  //     subject: "Table reservation",
-  //     html: msgToClient,
-  //   },
-  //   function (err, info) {
-  //     if (err) return res.status(500).send(err);
-  //     // res.json({ success: true });
-  //   }
-  // );
-  // email to Admin of Restourant
   transporter.sendMail(
     {
       // from: process.env.GMAIL_ADDRESS,
@@ -118,12 +96,43 @@ Email: ${req.body.email}
             message: "This is public info",
           })
         );
+    }
+  );
+});
 
-      // .set('Access-Control-Allow-Origin', '*')
-      // .send("OK!");
-      // .redirect("https://suliko.vercel.app");
+server.post("/review", urlencodedParser, function (req, res) {
+  const msgNewReview = `<p> You have a new review! 🙂 <br/><br/>
+Poduct: ${req.body.linkId}<br/>
+Rating: ${req.body.rating}<br/>
+Title: ${req.body.title}<br/>
+Review: ${req.body.review}<br/>
+Date: ${req.body.date}<br/>
+Name: ${req.body.name}<br/>
+Email: ${req.body.email}</p>`;
 
-      // .redirect("http://localhost:3000");
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
+
+  transporter.sendMail(
+    {
+      // from: process.env.GMAIL_ADDRESS,
+      to: "anker2702@gmail.com", // emailOfRestourantsAdmin
+      subject: "New review",
+      html: msgNewReview,
+    },
+    function (err, info) {
+      if (err) return res.status(500).send(err);
+      // res.json({ success: true });
+      res
+        .status(200)
+        .set("Access-Control-Allow-Origin", "*")
+        .set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        .set("Access-Control-Allow-Headers", "Content-Type")
+        .send(
+          JSON.stringify({
+            message: "This is public info",
+          })
+        );
     }
   );
 });
