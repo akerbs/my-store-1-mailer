@@ -71,21 +71,19 @@ transporter.verify((error, success) => {
 });
 
 server.post("/subscribe", urlencodedParser, function (req, res) {
-  if (!req.body) return res.sendStatus(400);
-  console.log(req.body);
+  // console.log(req.body);
   const { emailValue, tokenRecapcha } = req.body;
-  const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${tokenRecapcha}`;
 
-  const msgAbtSubscr = `<p> You have a new subscriber! 🙂 <br/><br/>
-Email: ${emailValue}
-</p>`;
+  // if (!req.body) return res.sendStatus(400);
+
+  const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${tokenRecapcha}`;
 
   if (!tokenRecapcha) {
     return res.json({
       msg: "There was a problem with your request. Please try again later.",
     });
   }
-  request(verificationUrl, (err, response, body) => {
+  request(verificationUrl, (err, res, body) => {
     // Stop process for any errors
     if (err) {
       return res.json({
@@ -111,6 +109,10 @@ Email: ${emailValue}
       score: score,
     });
   });
+
+  const msgAbtSubscr = `<p> You have a new subscriber! 🙂 <br/><br/>
+  Email: ${emailValue}
+  </p>`;
 
   transporter.sendMail(
     {
