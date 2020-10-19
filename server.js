@@ -40,8 +40,6 @@ server.get("/", (req, res) => {
 // server.use(bodyParser.urlencoded({ extended: false }));
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-const secretKey = process.env.RECAPTCHA_SECRET_KEY;
-
 let transporter = nodemailer.createTransport(
   {
     pool: true,
@@ -71,48 +69,12 @@ transporter.verify((error, success) => {
 });
 
 server.post("/subscribe", urlencodedParser, function (req, res) {
-  // console.log(req.body);
-  const { emailValue, tokenRecapcha } = req.body;
-
-  // if (!req.body) return res.sendStatus(400);
-
-  const verificationUrl = `https://www.google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${tokenRecapcha}`;
-
-  if (!tokenRecapcha) {
-    return res.json({
-      msg: "There was a problem with your request. Please try again later.",
-    });
-  }
-  request(verificationUrl, (err, res, body) => {
-    // Stop process for any errors
-    if (err) {
-      return res.json({
-        msg: "Unable to process request.",
-      });
-    }
-    // Destructure body object
-    // Check the reCAPTCHA v3 documentation for more information
-    const { success, score } = JSON.parse(body);
-    // reCAPTCHA validation
-    if (!success || score < 0.4) {
-      return res.json({
-        msg: "Sending failed. Robots aren't allowed here.",
-        score: score,
-      });
-    }
-    // When no problems occur, "send" the form
-    console.log("Congrats you sent the form:\n", emailVal, messageVal);
-
-    // Return feedback to user with msg
-    return res.json({
-      msg: "Your message was sent successfully!",
-      score: score,
-    });
-  });
-
   const msgAbtSubscr = `<p> You have a new subscriber! 🙂 <br/><br/>
-  Email: ${emailValue}
-  </p>`;
+Email: ${req.body.email}
+</p>`;
+
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
 
   transporter.sendMail(
     {
