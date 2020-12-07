@@ -131,6 +131,46 @@ Language: ${req.body.actLanguage}
   );
 });
 
+server.post("/review", urlencodedParser, function (req, res) {
+  // console.log("!req.body!:", req.body);
+  const msgNewReview = `<p> You have a new review! 🙂 <br/><br/>
+  Date: ${req.body.data.date}<br/>
+Name: ${req.body.data.name}<br/>
+Email: ${req.body.data.email}<br/>
+Language: ${req.body.actLanguage}</p>
+Product: ${req.body.data.linkId}<br/>
+Rating: ${req.body.data.rating}<br/>
+Title: ${req.body.data.title}<br/>
+Review: ${req.body.data.review}<br/>
+`;
+
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
+
+  transporter.sendMail(
+    {
+      // from: process.env.GMAIL_ADDRESS,
+      to: "anker2702@gmail.com", // emailOfRestourantsAdmin
+      subject: "New review",
+      html: msgNewReview,
+    },
+    function (err, info) {
+      if (err) return res.status(500).send(err);
+      // res.json({ success: true });
+      res
+        .status(200)
+        .set("Access-Control-Allow-Origin", "*")
+        .set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        .set("Access-Control-Allow-Headers", "Content-Type")
+        .send(
+          JSON.stringify({
+            message: "This is public info",
+          })
+        );
+    }
+  );
+});
+
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
