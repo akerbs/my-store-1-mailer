@@ -171,6 +171,50 @@ Review: ${req.body.data.review}<br/>
   );
 });
 
+server.post("/pppdate", urlencodedParser, function (req, res) {
+  console.log("!req.body!:", req.body);
+  const msgNewPaypalPayment = `<p> You have a new paypal payment! 🙂 <br/><br/>
+  paid:  ${req.body.paid}<br/>
+  cancelled:  ${req.body.cancelled}<br/>
+  payerID: ${req.body.payerID}<br/>
+  paymentID: ${req.body.paymentID}<br/>
+  paymentToken: ${req.body.paymentToken}<br/>
+  returnUrl: ${req.body.returnUrl}<br/>
+  recipient_name: ${req.body.address.recipient_name}<br/>
+  line1: ${req.body.address.line1}<br/>
+  city: ${req.body.address.city}<br/>
+  state: ${req.body.address.state}<br/>
+  postal_code: ${req.body.address.postal_code}<br/>
+  country_code: ${req.body.address.country_code}<br/>
+  email: ${req.body.email}<br/>`;
+
+  if (!req.body) return res.sendStatus(400);
+  console.log(req.body);
+
+  transporter.sendMail(
+    {
+      // from: process.env.GMAIL_ADDRESS,
+      to: "anker2702@gmail.com", // emailOfRestourantsAdmin
+      subject: "New Paypal Payment",
+      html: msgNewPaypalPayment,
+    },
+    function (err, info) {
+      if (err) return res.status(500).send(err);
+      // res.json({ success: true });
+      res
+        .status(200)
+        .set("Access-Control-Allow-Origin", "*")
+        .set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        .set("Access-Control-Allow-Headers", "Content-Type")
+        .send(
+          JSON.stringify({
+            message: "This is public info",
+          })
+        );
+    }
+  );
+});
+
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
